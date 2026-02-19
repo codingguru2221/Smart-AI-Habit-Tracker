@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HabitCard from '../components/HabitCard';
 import HabitForm from '../components/HabitForm';
 import StreakCounter from '../components/StreakCounter';
 import { useHabits } from '../hooks/useHabits';
 import { useCompletions } from '../hooks/useCompletions';
+import completionService from '../services/completionService';
 
 const DashboardPage = () => {
   const userId = 1; // Default user ID for now
   const [showForm, setShowForm] = useState(false);
   const [editingHabit, setEditingHabit] = useState(null);
+  const [habitStats, setHabitStats] = useState({});
   
   const {
     habits,
@@ -16,14 +18,47 @@ const DashboardPage = () => {
     error: habitsError,
     createHabit,
     updateHabit,
-    deleteHabit
+    deleteHabit,
+    getHabitWithStats
   } = useHabits(userId);
 
-  // Mock overall statistics
+  // Load statistics for each habit
+  useEffect(() => {
+    const loadHabitStats = async () => {
+      const stats = {};
+      for (const habit of habits) {
+        try {
+          const habitWithStats = await getHabitWithStats(habit.id);
+          stats[habit.id] = {
+            totalCompletions: habitWithStats.totalCompletions || 0,
+            currentStreak: habitWithStats.currentStreak || 0,
+            longestStreak: habitWithStats.longestStreak || 0,
+            completionRate: habitWithStats.completionRate || 0
+          };
+        } catch (error) {
+          console.error('Failed to load stats for habit:', habit.id, error);
+          stats[habit.id] = {
+            totalCompletions: 0,
+            currentStreak: 0,
+            longestStreak: 0,
+            completionRate: 0
+          };
+        }
+      }
+      setHabitStats(stats);
+    };
+
+    if (habits.length > 0) {
+      loadHabitStats();
+    }
+  }, [habits, getHabitWithStats]);
+
+  // Calculate overall statistics
   const overallStats = {
-    currentStreak: Math.max(...habits.map(h => 0), 0),
-    longestStreak: Math.max(...habits.map(h => 0), 0),
-    totalCompletions: habits.reduce((sum, habit) => sum + 0, 0) // Would need to fetch actual completions
+    currentStreak: Math.max(...Object.values(habitStats).map(stat => stat.currentStreak), 0),
+    longestStreak: Math.max(...Object.values(habitStats).map(stat => stat.longestStreak), 0),
+    totalCompletions: Object.values(habitStats).reduce((sum, stat) => sum + stat.totalCompletions, 0),
+    totalHabits: habits.length
   };
 
   const handleCreateHabit = async (habitData) => {
@@ -32,6 +67,7 @@ const DashboardPage = () => {
       setShowForm(false);
     } catch (error) {
       console.error('Failed to create habit:', error);
+      alert('Failed to create habit: ' + error.message);
     }
   };
 
@@ -41,6 +77,7 @@ const DashboardPage = () => {
       setEditingHabit(null);
     } catch (error) {
       console.error('Failed to update habit:', error);
+      alert('Failed to update habit: ' + error.message);
     }
   };
 
@@ -49,13 +86,38 @@ const DashboardPage = () => {
       await deleteHabit(id);
     } catch (error) {
       console.error('Failed to delete habit:', error);
+      alert('Failed to delete habit: ' + error.message);
     }
   };
 
   const handleMarkComplete = async (habitId) => {
-    // This would integrate with completion service
-    console.log('Marking habit complete:', habitId);
-    // Implementation would go here
+    try {
+      const completionData = {
+        habitId: habitId,
+        userId: userId,
+        completedAt: new Date().toISOString(),
+        notes: 'Completed via dashboard'
+      };
+      
+      await completionService.createCompletion(completionData);
+      
+      // Refresh habit stats
+      const updatedStats = await getHabitWithStats(habitId);
+      setHabitStats(prev => ({
+        ...prev,
+        [habitId]: {
+          totalCompletions: updatedStats.totalCompletions || 0,
+          currentStreak: updatedStats.currentStreak || 0,
+          longestStreak: updatedStats.longestStreak || 0,
+          completionRate: updatedStats.completionRate || 0
+        }
+      }));
+      
+      alert('Habit marked as complete!');
+    } catch (error) {
+      console.error('Failed to mark habit complete:', error);
+      alert('Failed to mark habit complete: ' + error.message);
+    }
   };
 
   const handleEditHabit = (habit) => {
@@ -63,11 +125,22 @@ const DashboardPage = () => {
   };
 
   if (habitsLoading) {
-    return <div className="loading">Loading habits...</div>;
+    return (
+      <div className="dashboard-page">
+        <div className="loading">Loading habits...</div>
+      </div>
+    );
   }
 
   if (habitsError) {
-    return <div className="error">Error loading habits: {habitsError}</div>;
+    return (
+      <div className="dashboard-page">
+        <div className="error">Error loading habits: {habitsError}</div>
+        <button className="btn btn-primary" onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -90,6 +163,12 @@ const DashboardPage = () => {
           longestStreak={overallStats.longestStreak}
           totalCompletions={overallStats.totalCompletions}
         />
+        <div className="overall-stats">
+          <div className="stat-item">
+            <span className="stat-label">Total Habits</span>
+            <span className="stat-value">{overallStats.totalHabits}</span>
+          </div>
+        </div>
       </div>
 
       <div className="habits-section">
@@ -110,7 +189,7 @@ const DashboardPage = () => {
               <HabitCard
                 key={habit.id}
                 habit={habit}
-                stats={{
+                stats={habitStats[habit.id] || {
                   totalCompletions: 0,
                   currentStreak: 0,
                   longestStreak: 0,
