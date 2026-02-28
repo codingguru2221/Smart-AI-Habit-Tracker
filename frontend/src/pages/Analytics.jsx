@@ -1,27 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '../components/layout/Layout';
-import { Droplets, BookOpen, Monitor, TrendingUp } from 'lucide-react';
+import { Droplets, BookOpen, Monitor } from 'lucide-react';
 import './Analytics.css';
 
 const Analytics = () => {
+  const [timeFilter, setTimeFilter] = useState('week'); // Default to week view
+
   // Dummy data for analytics
   const analyticsData = {
-    // Main chart data - overall performance
-    overallPerformance: [
-      { day: 'Mon', value: 65 },
-      { day: 'Tue', value: 72 },
-      { day: 'Wed', value: 80 },
-      { day: 'Thu', value: 75 },
-      { day: 'Fri', value: 88 },
-      { day: 'Sat', value: 60 },
-      { day: 'Sun', value: 70 }
-    ],
-    
-    // Habit-specific circular analytics
     habits: [
       {
         id: 'water',
-        name: 'Water Drinking',
+        name: 'Water',
         percentage: 92,
         icon: Droplets,
         color: '#3B82F6', // Blue theme
@@ -46,11 +36,62 @@ const Analytics = () => {
         bgColor: 'rgba(34, 197, 94, 0.1)',
         iconColor: '#22C55E'
       }
-    ]
+    ],
+    // Main chart data - varies by time filter
+    chartData: {
+      year: [
+        { month: 'Jan', value: 65 },
+        { month: 'Feb', value: 72 },
+        { month: 'Mar', value: 80 },
+        { month: 'Apr', value: 75 },
+        { month: 'May', value: 88 },
+        { month: 'Jun', value: 60 },
+        { month: 'Jul', value: 70 },
+        { month: 'Aug', value: 75 },
+        { month: 'Sep', value: 82 },
+        { month: 'Oct', value: 78 },
+        { month: 'Nov', value: 85 },
+        { month: 'Dec', value: 90 }
+      ],
+      month: [
+        { week: 'Week 1', value: 65 },
+        { week: 'Week 2', value: 72 },
+        { week: 'Week 3', value: 80 },
+        { week: 'Week 4', value: 75 }
+      ],
+      week: [
+        { day: 'Mon', value: 65 },
+        { day: 'Tue', value: 72 },
+        { day: 'Wed', value: 80 },
+        { day: 'Thu', value: 75 },
+        { day: 'Fri', value: 88 },
+        { day: 'Sat', value: 60 },
+        { day: 'Sun', value: 70 }
+      ]
+    }
   };
 
   const renderMainChart = () => {
-    const data = analyticsData.overallPerformance;
+    // Get data based on selected time filter
+    let data = [];
+    let labelKey = '';
+    
+    switch(timeFilter) {
+      case 'year':
+        data = analyticsData.chartData.year;
+        labelKey = 'month';
+        break;
+      case 'month':
+        data = analyticsData.chartData.month;
+        labelKey = 'week';
+        break;
+      case 'week':
+      default:
+        data = analyticsData.chartData.week;
+        labelKey = 'day';
+        break;
+    }
+
     const maxValue = Math.max(...data.map(d => d.value));
     const minValue = Math.min(...data.map(d => d.value));
     const range = maxValue - minValue;
@@ -63,15 +104,31 @@ const Analytics = () => {
     }).join(' ');
 
     const peakValue = Math.max(...data.map(d => d.value));
-    const peakDay = data.find(d => d.value === peakValue)?.day;
+    const peakLabel = data.find(d => d.value === peakValue)[labelKey];
 
     return (
       <div className="main-chart-container">
         <div className="chart-header">
           <h2>Overall Performance Trends</h2>
-          <div className="peak-indicator">
-            <TrendingUp size={18} />
-            <span>Peak: {peakValue}% ({peakDay})</span>
+          <div className="time-filter-options">
+            <button 
+              className={`filter-btn ${timeFilter === 'week' ? 'active' : ''}`}
+              onClick={() => setTimeFilter('week')}
+            >
+              Week
+            </button>
+            <button 
+              className={`filter-btn ${timeFilter === 'month' ? 'active' : ''}`}
+              onClick={() => setTimeFilter('month')}
+            >
+              Month
+            </button>
+            <button 
+              className={`filter-btn ${timeFilter === 'year' ? 'active' : ''}`}
+              onClick={() => setTimeFilter('year')}
+            >
+              Year
+            </button>
           </div>
         </div>
         
@@ -88,7 +145,7 @@ const Analytics = () => {
               points={points}
               fill="none"
               stroke="#3B82F6"
-              strokeWidth="3"
+              strokeWidth="2"
               className="trend-line"
             />
             
@@ -113,20 +170,11 @@ const Analytics = () => {
                   <circle
                     cx={x}
                     cy={y}
-                    r="3"
+                    r="2"
                     fill="#3B82F6"
                     stroke="#0F172A"
-                    strokeWidth="2"
+                    strokeWidth="1"
                     className="data-point"
-                  />
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r="6"
-                    fill="transparent"
-                    stroke="#3B82F6"
-                    strokeWidth="2"
-                    className="data-point-ring"
                   />
                 </g>
               );
@@ -136,136 +184,151 @@ const Analytics = () => {
           {/* X-axis labels */}
           <div className="chart-labels">
             {data.map((item, index) => (
-              <span key={index} className="x-label">{item.day}</span>
+              <span key={index} className="x-label">{item[labelKey]}</span>
             ))}
-          </div>
-        </div>
-        
-        {/* Chart statistics */}
-        <div className="chart-stats">
-          <div className="stat-item">
-            <span className="stat-label">Average</span>
-            <span className="stat-value">74%</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">This Week</span>
-            <span className="stat-value">+12%</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Consistency</span>
-            <span className="stat-value">85%</span>
           </div>
         </div>
       </div>
     );
   };
 
-  const renderCircularAnalytics = () => {
-    const renderCircularChart = (habit) => {
-      const radius = 40;
-      const circumference = 2 * Math.PI * radius;
-      const strokeDasharray = circumference;
-      const strokeDashoffset = circumference - (habit.percentage / 100) * circumference;
-      
-      const IconComponent = habit.icon;
-      
-      return (
-        <div className="circular-analytics-card" key={habit.id}>
-          <div className="circular-content">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              {/* Background circle */}
-              <circle
-                cx="50"
-                cy="50"
-                r={radius}
-                fill="none"
-                stroke="#334155"
-                strokeWidth="8"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="50"
-                cy="50"
-                r={radius}
-                fill="none"
-                stroke={habit.color}
-                strokeWidth="8"
-                strokeDasharray={strokeDasharray}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                transform="rotate(-90 50 50)"
-                className="progress-ring"
-              />
-            </svg>
+  const renderUnifiedCircularChart = () => {
+    // Calculate total percentage for proportional segments
+    const totalPercentage = analyticsData.habits.reduce((sum, habit) => sum + habit.percentage, 0);
+    const avgPercentage = Math.round(totalPercentage / analyticsData.habits.length);
+    
+    // Calculate cumulative angles for each segment
+    let cumulativeAngle = 0;
+    
+    return (
+      <div className="unified-circular-container">
+        <div className="unified-circular-content">
+          <svg width="200" height="200" viewBox="0 0 100 100">
+            {/* Background circle */}
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="#334155"
+              strokeWidth="8"
+            />
+            
+            {/* Habit segments */}
+            {analyticsData.habits.map((habit, index) => {
+              const percentage = habit.percentage;
+              const angle = (percentage / 100) * 360;
+              const startAngle = cumulativeAngle;
+              const endAngle = cumulativeAngle + angle;
+              
+              // Convert angles to radians
+              const startRad = (startAngle - 90) * (Math.PI / 180);
+              const endRad = (endAngle - 90) * (Math.PI / 180);
+              
+              // Calculate start and end points
+              const x1 = 50 + 40 * Math.cos(startRad);
+              const y1 = 50 + 40 * Math.sin(startRad);
+              const x2 = 50 + 40 * Math.cos(endRad);
+              const y2 = 50 + 40 * Math.sin(endRad);
+              
+              // Large arc flag (1 if angle > 180, 0 otherwise)
+              const largeArcFlag = angle > 180 ? 1 : 0;
+              
+              const pathData = [
+                `M ${x1} ${y1}`,
+                `A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2}`
+              ].join(' ');
+              
+              cumulativeAngle += angle;
+              
+              return (
+                <path
+                  key={habit.id}
+                  d={pathData}
+                  fill="none"
+                  stroke={habit.color}
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                />
+              );
+            })}
+            
+            {/* Center circle */}
+            <circle
+              cx="50"
+              cy="50"
+              r="25"
+              fill="#1E293B"
+            />
             
             {/* Center content */}
-            <div className="center-content">
-              <div 
-                className="habit-icon"
-                style={{ 
-                  color: habit.iconColor,
-                  backgroundColor: habit.bgColor
-                }}
-              >
-                <IconComponent size={24} />
-              </div>
-              <div className="percentage-value" style={{ color: habit.color }}>
-                {habit.percentage}%
-              </div>
-            </div>
-          </div>
-          
-          {/* Habit info */}
-          <div className="habit-info">
-            <h3 className="habit-name">{habit.name}</h3>
-            <p className="completion-text">Completion Rate</p>
-          </div>
-          
-          {/* Progress bar */}
-          <div className="progress-bar-container">
-            <div 
-              className="progress-bar-fill"
-              style={{ 
-                width: `${habit.percentage}%`,
-                backgroundColor: habit.color
-              }}
-            ></div>
-          </div>
-        </div>
-      );
-    };
-
-    return (
-      <div className="circular-analytics-container">
-        <div className="analytics-header">
-          <h2>Habit Analytics</h2>
-          <p>Track individual habit performance</p>
+            <text
+              x="50"
+              y="48"
+              textAnchor="middle"
+              fill="#E2E8F0"
+              fontSize="12"
+              fontWeight="bold"
+            >
+              {avgPercentage}%
+            </text>
+            <text
+              x="50"
+              y="58"
+              textAnchor="middle"
+              fill="#94a3b8"
+              fontSize="6"
+            >
+              Avg
+            </text>
+          </svg>
         </div>
         
-        <div className="circular-analytics-grid">
-          {analyticsData.habits.map(habit => renderCircularChart(habit))}
+        {/* Legend */}
+        <div className="habit-legend">
+          {analyticsData.habits.map((habit) => {
+            const IconComponent = habit.icon;
+            return (
+              <div key={habit.id} className="legend-item">
+                <div 
+                  className="legend-color"
+                  style={{ backgroundColor: habit.color }}
+                ></div>
+                <div 
+                  className="legend-icon"
+                  style={{ color: habit.iconColor }}
+                >
+                  <IconComponent size={12} />
+                </div>
+                <span className="legend-text">{habit.name}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   };
 
   return (
-    <Layout>
+    <Layout currentPage="analytics">
       <div className="analytics">
         <div className="page-header">
           <h1>Analytics Dashboard</h1>
           <p>Comprehensive overview of your habit tracking performance</p>
         </div>
         
-        <div className="analytics-layout">
+        <div className="analytics-layout-improved">
           {/* Left Side - Main Chart */}
-          <div className="main-chart-section">
+          <div className="main-chart-section-improved">
             {renderMainChart()}
           </div>
           
-          {/* Right Side - Circular Analytics */}
-          <div className="circular-analytics-section">
-            {renderCircularAnalytics()}
+          {/* Right Side - Unified Circular Analytics */}
+          <div className="circular-analytics-section-improved">
+            <div className="circular-header">
+              <h2>Habit Distribution</h2>
+            </div>
+            {renderUnifiedCircularChart()}
           </div>
         </div>
       </div>

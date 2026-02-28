@@ -25,7 +25,7 @@ const AddHabit = () => {
   };
 
   return (
-    <Layout>
+    <Layout currentPage="add-habit">
       <div className="add-habit">
         <div className="page-header">
           <h1>Add New Habit</h1>

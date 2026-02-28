@@ -3,12 +3,12 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import './Layout.css';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, currentPage }) => {
   return (
     <div className="app-layout">
       <Sidebar />
       <div className="main-content">
-        <Header />
+        <Header currentPage={currentPage} />
         <div className="content-wrapper">
           {children}
         </div>

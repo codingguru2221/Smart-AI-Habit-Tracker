@@ -22,6 +22,17 @@
   margin: 0 auto;
 }
 
+.page-title {
+  flex: 1;
+}
+
+.page-title h1 {
+  color: #E2E8F0;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
 .search-container {
   position: relative;
   width: 400px;
@@ -112,6 +123,10 @@
   .app-header {
     padding: 0 16px;
     height: 64px;
+  }
+  
+  .page-title h1 {
+    font-size: 18px;
   }
   
   .search-container {

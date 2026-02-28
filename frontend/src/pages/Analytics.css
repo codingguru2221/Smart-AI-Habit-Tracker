@@ -1,15 +1,15 @@
 /* Analytics.css - Analytics page specific styles */
 
-/* New Analytics Layout */
-.analytics-layout {
+/* Improved Analytics Layout */
+.analytics-layout-improved {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 32px;
   height: calc(100vh - 200px);
 }
 
-/* Left Side - Main Chart Section */
-.main-chart-section {
+/* Left Side - Main Chart Section (Improved) */
+.main-chart-section-improved {
   background: #1E293B;
   border-radius: 16px;
   padding: 24px;
@@ -39,13 +39,32 @@
   font-weight: 600;
 }
 
-.peak-indicator {
+.time-filter-options {
   display: flex;
-  align-items: center;
   gap: 8px;
-  color: #3B82F6;
-  font-size: 14px;
+}
+
+.filter-btn {
+  background: #334155;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: #475569;
+  color: #E2E8F0;
+}
+
+.filter-btn.active {
+  background: #3B82F6;
+  color: #E2E8F0;
+  border-color: #3B82F6;
 }
 
 .chart-wrapper {
@@ -57,7 +76,7 @@
 .performance-chart {
   width: 100%;
   height: 100%;
-  min-height: 300px;
+  min-height: 250px; /* Reduced size */
 }
 
 .grid-line {
@@ -70,26 +89,8 @@
   transition: stroke 0.3s ease;
 }
 
-.trend-line:hover {
-  stroke-width: 4;
-}
-
 .data-point {
   transition: all 0.2s ease;
-}
-
-.data-point:hover {
-  r: 5;
-}
-
-.data-point-ring {
-  transition: all 0.2s ease;
-  opacity: 0;
-}
-
-.data-point:hover + .data-point-ring {
-  opacity: 0.3;
-  r: 12;
 }
 
 .chart-labels {
@@ -100,40 +101,15 @@
 }
 
 .x-label {
-  font-size: 14px;
+  font-size: 12px;
   color: #94a3b8;
   font-weight: 500;
   flex: 1;
   text-align: center;
 }
 
-.chart-stats {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #334155;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-label {
-  display: block;
-  font-size: 14px;
-  color: #94a3b8;
-  margin-bottom: 4px;
-}
-
-.stat-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: #3B82F6;
-}
-
-/* Right Side - Circular Analytics Section */
-.circular-analytics-section {
+/* Right Side - Unified Circular Analytics Section */
+.circular-analytics-section-improved {
   background: #1E293B;
   border-radius: 16px;
   padding: 24px;
@@ -143,152 +119,94 @@
   flex-direction: column;
 }
 
-.circular-analytics-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.analytics-header {
+.circular-header {
   margin-bottom: 24px;
 }
 
-.analytics-header h2 {
+.circular-header h2 {
   color: #E2E8F0;
   margin: 0 0 8px 0;
   font-size: 20px;
   font-weight: 600;
 }
 
-.analytics-header p {
-  color: #94a3b8;
-  margin: 0;
-  font-size: 14px;
-}
-
-.circular-analytics-grid {
+.unified-circular-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 24px;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
 }
 
-.circular-analytics-card {
-  background: #334155;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #475569;
-  transition: all 0.3s ease;
-}
-
-.circular-analytics-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  border-color: #3B82F6;
-}
-
-.circular-content {
-  position: relative;
-  margin-bottom: 16px;
+.unified-circular-content {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-.center-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.habit-legend {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.legend-item {
+  display: flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 12px;
+  background: #334155;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-.habit-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+.legend-item:hover {
+  background: #475569;
+}
+
+.legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-icon {
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  flex-shrink: 0;
 }
 
-.percentage-value {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.progress-ring {
-  transition: stroke-dashoffset 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.habit-info {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.habit-name {
+.legend-text {
   color: #E2E8F0;
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.completion-text {
-  color: #94a3b8;
-  margin: 0;
   font-size: 12px;
-}
-
-.progress-bar-container {
-  height: 6px;
-  background: #475569;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-weight: 500;
+  flex: 1;
 }
 
 /* Responsive design */
 @media (max-width: 1200px) {
-  .analytics-layout {
+  .analytics-layout-improved {
     grid-template-columns: 1fr;
     gap: 24px;
     height: auto;
   }
   
-  .main-chart-section {
-    min-height: 400px;
-  }
-  
-  .circular-analytics-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .circular-analytics-card {
-    flex: 1;
-    min-width: 200px;
-    max-width: 250px;
+  .main-chart-section-improved {
+    min-height: 300px;
   }
 }
 
 @media (max-width: 768px) {
-  .analytics-layout {
+  .analytics-layout-improved {
     gap: 16px;
   }
   
-  .main-chart-section,
-  .circular-analytics-section {
+  .main-chart-section-improved,
+  .circular-analytics-section-improved {
     padding: 16px;
   }
   
@@ -298,24 +216,17 @@
     gap: 12px;
   }
   
+  .time-filter-options {
+    width: 100%;
+    justify-content: center;
+  }
+  
   .chart-header h2 {
     font-size: 20px;
   }
   
-  .circular-analytics-grid {
-    flex-direction: column;
-  }
-  
-  .circular-analytics-card {
-    max-width: 100%;
-  }
-  
-  .chart-stats {
+  .unified-circular-content {
     flex-direction: column;
     gap: 16px;
-  }
-  
-  .stat-item {
-    text-align: left;
   }
 }

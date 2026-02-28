@@ -3,7 +3,7 @@ import Layout from '../components/layout/Layout';
 
 const Habits = () => {
   return (
-    <Layout>
+    <Layout currentPage="habits">
       <div className="habits-page">
         <div className="page-header">
           <h1>Habits Management</h1>
