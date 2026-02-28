@@ -1,143 +1,144 @@
-import React, { useState } from 'react';
-import { 
-  Home, 
-  BarChart3, 
-  CheckSquare, 
-  Plus, 
-  Code, 
-  Lightbulb, 
-  Dumbbell, 
-  Heart 
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Home, BarChart3, CheckSquare, Settings, LogOut, ChevronDown, ChevronRight } from 'lucide-react';
+import { useUser } from '../../contexts/UserContext';
 import './Sidebar.css';
 
-const Sidebar = () => {
-  const [activeItem, setActiveItem] = useState('dashboard');
+const Sidebar = ({ currentPage }) => {
   const [expandedHabits, setExpandedHabits] = useState(false);
+  const { logout } = useUser();
 
-  const menuItems = [
-    {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: Home,
-      path: '/dashboard'
-    },
-    {
-      id: 'analytics',
-      label: 'Analytics',
-      icon: BarChart3,
-      path: '/analytics'
-    },
-    {
-      id: 'habits',
-      label: 'Habits',
-      icon: CheckSquare,
-      path: '/habits',
-      isParent: true,
-      children: [
-        {
-          id: 'add-habit',
-          label: 'Add Habit',
-          icon: Plus,
-          path: '/add-habit'
-        },
-        {
-          id: 'technical',
-          label: 'Technical Habits',
-          icon: Code,
-          path: '/habits/technical'
-        },
-        {
-          id: 'non-technical',
-          label: 'Non-Technical Habits',
-          icon: Lightbulb,
-          path: '/habits/non-technical'
-        },
-        {
-          id: 'physical',
-          label: 'Physical Habits',
-          icon: Dumbbell,
-          path: '/habits/physical'
-        },
-        {
-          id: 'non-physical',
-          label: 'Non-Physical Habits',
-          icon: Heart,
-          path: '/habits/non-physical'
-        }
-      ]
+  // Determine active section based on current page
+  const getActiveSection = () => {
+    if (currentPage === 'dashboard') return 'dashboard';
+    if (currentPage === 'analytics') return 'analytics';
+    if (currentPage === 'settings') return 'settings';
+    if (currentPage.startsWith('habits')) {
+      setExpandedHabits(true);
+      return currentPage;
     }
-  ];
-
-  const handleItemClick = (item) => {
-    setActiveItem(item.id);
-    
-    if (item.isParent) {
-      setExpandedHabits(!expandedHabits);
-    }
-    
-    // Navigate to the path
-    if (item.path) {
-      window.location.hash = item.path;
-    }
+    return 'dashboard';
   };
 
-  const renderMenuItem = (item) => {
-    const IconComponent = item.icon;
-    const isActive = activeItem === item.id;
-    const hasChildren = item.children && item.children.length > 0;
+  const activeSection = getActiveSection();
 
-    return (
-      <div key={item.id} className="menu-item-wrapper">
-        <button
-          className={`menu-item ${isActive ? 'active' : ''} ${hasChildren ? 'has-children' : ''}`}
-          onClick={() => handleItemClick(item)}
-        >
-          <IconComponent size={20} className="menu-icon" />
-          <span className="menu-label">{item.label}</span>
-          {hasChildren && (
-            <span className={`expand-icon ${expandedHabits ? 'expanded' : ''}`}>
-             ▼
-            </span>
-          )}
-        </button>
-        
-        {hasChildren && expandedHabits && (
-          <div className="submenu">
-            {item.children.map(child => {
-              const ChildIcon = child.icon;
-              const isChildActive = activeItem === child.id;
-              
-              return (
-                <button
-                  key={child.id}
-                  className={`submenu-item ${isChildActive ? 'active' : ''}`}
-                  onClick={() => handleItemClick(child)}
-                >
-                  <ChildIcon size={16} className="submenu-icon" />
-                  <span className="submenu-label">{child.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    );
+  const navigateTo = (section) => {
+    window.location.hash = `#${section}`;
+  };
+
+  const toggleHabits = () => {
+    setExpandedHabits(!expandedHabits);
+  };
+
+  const handleLogout = () => {
+    logout();
+    window.location.hash = '#auth';
   };
 
   return (
-    <aside className="app-sidebar">
+    <aside className="sidebar">
       <div className="sidebar-header">
-        <h1 className="app-logo">HabitTracker</h1>
+        <h2 className="sidebar-title">
+          <span className="title-smart">Smart</span>
+          <span className="title-habit">Habit</span>
+          <span className="title-tracker">Tracker</span>
+        </h2>
       </div>
       
-      <nav className="sidebar-nav">
-        <ul className="menu-list">
-          {menuItems.map(item => (
-            <li key={item.id} className="menu-item-container">
-              {renderMenuItem(item)}
-            </li>
-          ))}
+      <nav className="nav-menu">
+        <ul className="nav-list">
+          {/* Main Navigation */}
+          <li className={`nav-item ${activeSection === 'dashboard' ? 'active' : ''}`}>
+            <button 
+              className="nav-link"
+              onClick={() => navigateTo('dashboard')}
+            >
+              <Home size={20} />
+              <span>Dashboard</span>
+            </button>
+          </li>
+          
+          <li className={`nav-item ${activeSection === 'analytics' ? 'active' : ''}`}>
+            <button 
+              className="nav-link"
+              onClick={() => navigateTo('analytics')}
+            >
+              <BarChart3 size={20} />
+              <span>Analytics</span>
+            </button>
+          </li>
+          
+          <li className={`nav-item ${activeSection.startsWith('habits') ? 'active has-submenu' : ''}`}>
+            <button 
+              className="nav-link"
+              onClick={toggleHabits}
+            >
+              <CheckSquare size={20} />
+              <span>Habits</span>
+              {expandedHabits ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </button>
+            
+            {expandedHabits && (
+              <ul className="sub-nav-list">
+                <li className={`sub-nav-item ${activeSection === 'habits/technical' ? 'active' : ''}`}>
+                  <button 
+                    className="sub-nav-link"
+                    onClick={() => navigateTo('habits/technical')}
+                  >
+                    Technical habits
+                  </button>
+                </li>
+                <li className={`sub-nav-item ${activeSection === 'habits/non-technical' ? 'active' : ''}`}>
+                  <button 
+                    className="sub-nav-link"
+                    onClick={() => navigateTo('habits/non-technical')}
+                  >
+                    Non-Technical habits
+                  </button>
+                </li>
+                <li className={`sub-nav-item ${activeSection === 'habits/physical' ? 'active' : ''}`}>
+                  <button 
+                    className="sub-nav-link"
+                    onClick={() => navigateTo('habits/physical')}
+                  >
+                    Physical habits
+                  </button>
+                </li>
+                <li className={`sub-nav-item ${activeSection === 'habits/non-physical' ? 'active' : ''}`}>
+                  <button 
+                    className="sub-nav-link"
+                    onClick={() => navigateTo('habits/non-physical')}
+                  >
+                    Non-Physical habits
+                  </button>
+                </li>
+              </ul>
+            )}
+          </li>
+        </ul>
+
+        {/* Divider and Additional Options at Bottom */}
+        <div className="nav-divider"></div>
+        
+        <ul className="nav-list bottom-nav">
+          <li className={`nav-item ${activeSection === 'settings' ? 'active' : ''}`}>
+            <button 
+              className="nav-link"
+              onClick={() => navigateTo('settings')}
+            >
+              <Settings size={20} />
+              <span>Settings</span>
+            </button>
+          </li>
+          
+          <li className="nav-item">
+            <button 
+              className="nav-link logout-link"
+              onClick={handleLogout}
+            >
+              <LogOut size={20} />
+              <span>Logout</span>
+            </button>
+          </li>
         </ul>
       </nav>
     </aside>

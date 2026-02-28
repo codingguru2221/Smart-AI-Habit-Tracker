@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import Layout from '../components/layout/Layout';
 import { Droplets, BookOpen, Monitor } from 'lucide-react';
 import './Analytics.css';
 
 const Analytics = () => {
   const [timeFilter, setTimeFilter] = useState('week'); // Default to week view
 
-  // Dummy data for analytics
+  // Dummy data for analytics with new color scheme
   const analyticsData = {
     habits: [
       {
@@ -14,27 +13,27 @@ const Analytics = () => {
         name: 'Water',
         percentage: 92,
         icon: Droplets,
-        color: '#3B82F6', // Blue theme
-        bgColor: 'rgba(59, 130, 246, 0.1)',
-        iconColor: '#3B82F6'
+        color: '#2563EB', // Smart Blue
+        bgColor: 'rgba(37, 99, 235, 0.1)',
+        iconColor: '#2563EB'
       },
       {
         id: 'study',
         name: 'Study',
         percentage: 78,
         icon: BookOpen,
-        color: '#E2E8F0', // White theme
-        bgColor: 'rgba(226, 232, 240, 0.1)',
-        iconColor: '#E2E8F0'
+        color: '#14B8A6', // Soft Teal
+        bgColor: 'rgba(20, 184, 166, 0.1)',
+        iconColor: '#14B8A6'
       },
       {
         id: 'coding',
         name: 'Coding',
         percentage: 85,
         icon: Monitor,
-        color: '#22C55E', // Accent color
-        bgColor: 'rgba(34, 197, 94, 0.1)',
-        iconColor: '#22C55E'
+        color: '#8B5CF6', // Purple (Streak Highlight)
+        bgColor: 'rgba(139, 92, 246, 0.1)',
+        iconColor: '#8B5CF6'
       }
     ],
     // Main chart data - varies by time filter
@@ -96,20 +95,18 @@ const Analytics = () => {
     const minValue = Math.min(...data.map(d => d.value));
     const range = maxValue - minValue;
     
-    // Generate smooth curve points
+    // Generate smooth curve points with better scaling
     const points = data.map((item, index) => {
       const x = (index / (data.length - 1)) * 100;
-      const y = 100 - ((item.value - minValue) / range) * 80;
+      // Scale Y values to use more of the chart area (85% instead of 80%)
+      const y = 100 - ((item.value - minValue) / range) * 85;
       return `${x},${y}`;
     }).join(' ');
-
-    const peakValue = Math.max(...data.map(d => d.value));
-    const peakLabel = data.find(d => d.value === peakValue)[labelKey];
 
     return (
       <div className="main-chart-container">
         <div className="chart-header">
-          <h2>Overall Performance Trends</h2>
+          <h2>Performance Trends</h2>
           <div className="time-filter-options">
             <button 
               className={`filter-btn ${timeFilter === 'week' ? 'active' : ''}`}
@@ -133,27 +130,30 @@ const Analytics = () => {
         </div>
         
         <div className="chart-wrapper">
-          <svg viewBox="0 0 100 100" className="performance-chart">
+          <svg viewBox="0 0 100 100" className="performance-chart" preserveAspectRatio="none">
             {/* Grid lines */}
-            <line x1="0" y1="20" x2="100" y2="20" className="grid-line" />
-            <line x1="0" y1="40" x2="100" y2="40" className="grid-line" />
-            <line x1="0" y1="60" x2="100" y2="60" className="grid-line" />
-            <line x1="0" y1="80" x2="100" y2="80" className="grid-line" />
+            <line x1="0" y1="15" x2="100" y2="15" className="grid-line" />
+            <line x1="0" y1="35" x2="100" y2="35" className="grid-line" />
+            <line x1="0" y1="55" x2="100" y2="55" className="grid-line" />
+            <line x1="0" y1="75" x2="100" y2="75" className="grid-line" />
+            <line x1="0" y1="95" x2="100" y2="95" className="grid-line" />
             
-            {/* Main trend line */}
+            {/* Main trend line - Ultra-thin at 0.5px */}
             <polyline
               points={points}
               fill="none"
-              stroke="#3B82F6"
-              strokeWidth="2"
+              stroke="#2563EB"
+              strokeWidth="0.5"
               className="trend-line"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             
             {/* Gradient area under curve */}
             <defs>
               <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.05" />
+                <stop offset="0%" stopColor="#2563EB" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#2563EB" stopOpacity="0.02" />
               </linearGradient>
             </defs>
             <polygon 
@@ -161,19 +161,19 @@ const Analytics = () => {
               fill="url(#chartGradient)" 
             />
             
-            {/* Data points */}
+            {/* Data points - Also 0.5px for consistency */}
             {data.map((item, index) => {
               const x = (index / (data.length - 1)) * 100;
-              const y = 100 - ((item.value - minValue) / range) * 80;
+              const y = 100 - ((item.value - minValue) / range) * 85;
               return (
                 <g key={index}>
                   <circle
                     cx={x}
                     cy={y}
-                    r="2"
-                    fill="#3B82F6"
-                    stroke="#0F172A"
-                    strokeWidth="1"
+                    r="0.5"
+                    fill="#2563EB"
+                    stroke="#FFFFFF"
+                    strokeWidth="0.25"
                     className="data-point"
                   />
                 </g>
@@ -203,15 +203,15 @@ const Analytics = () => {
     return (
       <div className="unified-circular-container">
         <div className="unified-circular-content">
-          <svg width="200" height="200" viewBox="0 0 100 100">
+          <svg width="160" height="160" viewBox="0 0 100 100">
             {/* Background circle */}
             <circle
               cx="50"
               cy="50"
               r="40"
               fill="none"
-              stroke="#334155"
-              strokeWidth="8"
+              stroke="#E2E8F0"
+              strokeWidth="6"
             />
             
             {/* Habit segments */}
@@ -247,7 +247,7 @@ const Analytics = () => {
                   d={pathData}
                   fill="none"
                   stroke={habit.color}
-                  strokeWidth="8"
+                  strokeWidth="6"
                   strokeLinecap="round"
                 />
               );
@@ -257,8 +257,8 @@ const Analytics = () => {
             <circle
               cx="50"
               cy="50"
-              r="25"
-              fill="#1E293B"
+              r="22"
+              fill="#FFFFFF"
             />
             
             {/* Center content */}
@@ -266,8 +266,8 @@ const Analytics = () => {
               x="50"
               y="48"
               textAnchor="middle"
-              fill="#E2E8F0"
-              fontSize="12"
+              fill="#0F172A"
+              fontSize="11"
               fontWeight="bold"
             >
               {avgPercentage}%
@@ -276,8 +276,8 @@ const Analytics = () => {
               x="50"
               y="58"
               textAnchor="middle"
-              fill="#94a3b8"
-              fontSize="6"
+              fill="#64748B"
+              fontSize="5"
             >
               Avg
             </text>
@@ -298,7 +298,7 @@ const Analytics = () => {
                   className="legend-icon"
                   style={{ color: habit.iconColor }}
                 >
-                  <IconComponent size={12} />
+                  <IconComponent size={11} />
                 </div>
                 <span className="legend-text">{habit.name}</span>
               </div>
@@ -310,29 +310,22 @@ const Analytics = () => {
   };
 
   return (
-    <Layout currentPage="analytics">
-      <div className="analytics">
-        <div className="page-header">
-          <h1>Analytics Dashboard</h1>
-          <p>Comprehensive overview of your habit tracking performance</p>
+    <div className="analytics">
+      <div className="analytics-layout-improved">
+        {/* Left Side - Main Chart */}
+        <div className="main-chart-section-improved">
+          {renderMainChart()}
         </div>
         
-        <div className="analytics-layout-improved">
-          {/* Left Side - Main Chart */}
-          <div className="main-chart-section-improved">
-            {renderMainChart()}
+        {/* Right Side - Unified Circular Analytics */}
+        <div className="circular-analytics-section-improved">
+          <div className="circular-header">
+            <h2>Habit Distribution</h2>
           </div>
-          
-          {/* Right Side - Unified Circular Analytics */}
-          <div className="circular-analytics-section-improved">
-            <div className="circular-header">
-              <h2>Habit Distribution</h2>
-            </div>
-            {renderUnifiedCircularChart()}
-          </div>
+          {renderUnifiedCircularChart()}
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

@@ -6,7 +6,7 @@ import './Layout.css';
 const Layout = ({ children, currentPage }) => {
   return (
     <div className="app-layout">
-      <Sidebar />
+      <Sidebar currentPage={currentPage} />
       <div className="main-content">
         <Header currentPage={currentPage} />
         <div className="content-wrapper">
