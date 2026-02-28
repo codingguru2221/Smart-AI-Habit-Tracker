@@ -1,16 +1,17 @@
-/* Header.css - Top navigation bar */
+/* Header.css - Top navigation bar with properly aligned search */
+
 .app-header {
-  background: #1E293B; /* Card background */
-  border-bottom: 1px solid #334155;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
   padding: 0 24px;
   height: 72px;
   display: flex;
   align-items: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
-  color: #E2E8F0; /* Light text */
+  color: #0F172A;
 }
 
 .header-content {
@@ -27,7 +28,7 @@
 }
 
 .page-title h1 {
-  color: #E2E8F0;
+  color: #0F172A;
   margin: 0;
   font-size: 20px;
   font-weight: 600;
@@ -35,34 +36,12 @@
 
 .search-container {
   position: relative;
-  width: 400px;
-  max-width: 50%;
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8; /* Lighter gray */
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 16px 12px 44px;
-  border: 1px solid #334155; /* Darker border */
-  border-radius: 8px;
-  font-size: 14px;
-  background: #334155; /* Darker background */
-  color: #E2E8F0; /* Light text */
-  transition: all 0.2s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6; /* Primary color */
-  background: #475569; /* Lighter dark */
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Primary with transparency */
+  width: 300px; /* Reduced width */
+  max-width: 35%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .header-actions {
@@ -81,32 +60,32 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #94a3b8; /* Lighter gray */
+  color: #64748B;
   transition: all 0.2s ease;
   position: relative;
 }
 
 .action-button:hover {
-  background-color: #334155; /* Darker hover */
-  color: #3b82f6; /* Primary color */
+  background-color: #F1F5F9;
+  color: #2563EB;
 }
 
 .add-habit-btn {
-  background: #3b82f6; /* Primary color */
-  color: #E2E8F0; /* Light text */
+  background: #2563EB;
+  color: #FFFFFF;
 }
 
 .add-habit-btn:hover {
-  background: #2563eb; /* Darker primary */
-  color: #E2E8F0; /* Light text */
+  background: #1D4ED8;
+  color: #FFFFFF;
 }
 
 .notification-badge {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #22C55E; /* Accent color */
-  color: #0F172A; /* Dark background */
+  background: #22C55E;
+  color: #FFFFFF;
   font-size: 10px;
   font-weight: 600;
   min-width: 18px;
@@ -131,6 +110,7 @@
   
   .search-container {
     width: 200px;
+    max-width: 40%;
   }
   
   .header-actions {
@@ -140,5 +120,16 @@
   .action-button {
     width: 36px;
     height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container {
+    width: 150px;
+    max-width: 35%;
+  }
+  
+  .page-title h1 {
+    font-size: 16px;
   }
 }

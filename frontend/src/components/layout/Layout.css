@@ -1,32 +1,35 @@
-/* Layout.css - Main application layout */
+/* Layout.css - Main layout structure with compact sidebar */
+
 .app-layout {
   display: flex;
-  height: 100vh;
-  background-color: #0F172A; /* Dark background */
+  min-height: 100vh;
+  background-color: #F8FAFC;
 }
 
+/* Main content area - adjusted for new sidebar width */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-left: 220px; /* Match sidebar width */
   overflow: hidden;
 }
 
 .content-wrapper {
   flex: 1;
-  padding: 24px;
   overflow-y: auto;
-  background-color: #0F172A; /* Dark background */
-  color: #E2E8F0; /* Light text */
+  padding: 0;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .app-layout {
-    flex-direction: column;
+  .main-content {
+    margin-left: 200px;
   }
-  
-  .content-wrapper {
-    padding: 16px;
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-left: 0;
   }
 }

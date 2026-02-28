@@ -27,11 +27,6 @@ const AddHabit = () => {
   return (
     <Layout currentPage="add-habit">
       <div className="add-habit">
-        <div className="page-header">
-          <h1>Add New Habit</h1>
-          <p>Create and customize your new habit</p>
-        </div>
-        
         <form className="habit-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="name">Habit Name</label>
